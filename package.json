@@ -1,0 +1,20 @@
+{
+  "name": "jarvis",
+  "version": "0.0.0",
+  "description": "test angular 2",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "start": "live-server"
+  },
+  "devDependencies": {
+    "live-server": "^0.8.2"
+  },
+  "dependencies": {
+    "angular2": "2.0.0-alpha.44",
+    "bootstrap": "^3.3.5",
+    "font-awesome": "^4.4.0",
+    "systemjs": "0.19.2"
+  }
+}
