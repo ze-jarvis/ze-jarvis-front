@@ -1,4 +1,5 @@
-import {bootstrap, Component, CORE_DIRECTIVES, FORM_DIRECTIVES} from 'angular2/angular2';
+import {bootstrap, Component, Inject, CORE_DIRECTIVES, FORM_DIRECTIVES} from 'angular2/angular2';
+import {HTTP_PROVIDERS, Http, Headers} from 'angular2/http';
 
 @Component({
   selector: 'jarvis-chat',
@@ -8,12 +9,14 @@ import {bootstrap, Component, CORE_DIRECTIVES, FORM_DIRECTIVES} from 'angular2/a
     <h1>Ze Jarvis Chat</h1>
 
     <div class="row">
-      <div class="col-xs-10">
+      <div class="col-xs-8">
         <input class="form-control" type="text" #prompt>
       </div>
-      <div class="col-xs-2">
-        <button class="btn btn-primary pull-right" (click)="sendToJarvis(prompt.value)">
-        Send <i class="fa fa-arrow-down"></i></button>
+      <div class="col-xs-4">
+        <button class="btn btn-primary" (click)="getMessages()">
+          Refresh <i class="fa fa-refresh"></i></button>
+        <button class="btn btn-primary" (click)="sendToJarvis(prompt.value)">
+          Send <i class="fa fa-arrow-down"></i></button>
       </div>
     </div>
 
@@ -28,26 +31,49 @@ import {bootstrap, Component, CORE_DIRECTIVES, FORM_DIRECTIVES} from 'angular2/a
           <div class="panel-body">
             <ul class="fa fa-ul">
               <li *ng-for="#txt of jarvisMsg">
-                <i class="fa fa-angle-right"></i> {{txt}}
-              </li>
+                {{txt.user}} <i class="fa fa-angle-right"></i> {{txt.text}}               </li>
             </ul>
           </div>
         </div>
       </div>
     </div>
+    <hr/>
+    {{jarvisMsg}}
   </section>`
 })
 class AppComponent {
-  jarvisMsg: string[]=['abc', 'def'];
+  jarvisMsg =[];
 
-  constructor() {
+  _http: Http;
+
+  constructor(@Inject(Http) http: Http) {
+    this._http = http;
   }
 
   sendToJarvis(msg: string): void {
-    console.log('pushing ', msg);
-    this.jarvisMsg.push(msg);
+    this._http.post('http://localhost:3000/messages',
+      JSON.stringify({
+        text: msg,
+        user: 'romain'
+      }), {
+        headers: new Headers({
+          'Content-Type': 'application/json'
+        })
+      })
+      .subscribe((data) => {
+        this.jarvisMsg.push(JSON.parse(data._body));
+      });
+  }
+
+  getMessages(): void {
+    this._http.get('http://localhost:3000/messages')
+      .map(res => res.json())
+      .subscribe((msg: string[]) => {
+        console.log('not believable', msg);
+        this.jarvisMsg = msg;
+      });
   }
 
 }
 
-bootstrap(AppComponent);
+bootstrap(AppComponent, [HTTP_PROVIDERS]);
