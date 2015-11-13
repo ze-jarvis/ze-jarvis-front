@@ -1,7 +1,7 @@
 import {bootstrap, Component, CORE_DIRECTIVES, FORM_DIRECTIVES} from 'angular2/angular2';
 
 @Component({
-  selector: 'my-app',
+  selector: 'jarvis-chat',
   directives: [CORE_DIRECTIVES, FORM_DIRECTIVES],
   template: `
   <section class="container">
